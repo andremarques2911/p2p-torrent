@@ -5,10 +5,11 @@ import java.net.MulticastSocket;
 import java.util.Objects;
 
 public class SuperNodeGroupReceiver extends Thread {
-    protected MulticastSocket socket;
-    protected InetAddress inetAddress;
-    protected String groupIP;
-    protected int groupPort;
+    
+    private MulticastSocket socket;
+    private InetAddress inetAddress;
+    private String groupIP;
+    private int groupPort;
 
     public SuperNodeGroupReceiver(String[] args) {
         this.groupIP = args[0];
@@ -23,12 +24,14 @@ public class SuperNodeGroupReceiver extends Thread {
             this.socket.joinGroup(inetAddress);
 
             while (true) {
+
                 byte[] in = new byte[256];
                 DatagramPacket packet = new DatagramPacket(in, in.length);
-//                this.socket.setSoTimeout(500);
+
                 this.socket.receive(packet);
                 String received = new String(packet.getData(), 0, packet.getLength());
                 System.out.println("Received: " + received);
+               
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
