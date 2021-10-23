@@ -43,6 +43,7 @@ public class SuperNodeThread extends Thread {
                 peerIP = packet.getAddress();
                 peerPort = packet.getPort();
                 String[] vars = content.split("\\s");
+                String key = peerIP + ":" + peerPort;
 
                 if (vars[0].equals("create") && vars.length > 1) {
                     // java P2P create 0x124421 0x43432 0x12123
@@ -52,7 +53,6 @@ public class SuperNodeThread extends Thread {
                         distributedHashTable.put(vars[i], resource);
                         sb.append(vars[i]).append(" ");
                     }
-                    String key = peerIP + ":" + peerPort;
                     peerResources.put(key, sb.toString());
                     response = "OK".getBytes();
                     packet = new DatagramPacket(response, response.length, peerIP, peerPort);
@@ -61,12 +61,19 @@ public class SuperNodeThread extends Thread {
 
                 if (vars[0].equals("find") && vars.length > 1) {
                     for (int i = 1; i < vars.length; i++) {
-                        this.sendGroup(vars[i]);
+                       this.send(key + "-" + vars[i], this.groupIP, this.groupPort);
                     }
                 }
 
                 if (vars[0].equals("finded") && vars.length > 1) {
+                    String[] address = vars[1].split(":");
+                    InetAddress nodeIP = InetAddress.getByName(address[0]);
+                    int nodePort = Integer.parseInt(address[1]);
+                    String resourceAddress = vars[2];
+                    String fileName = vars[3];
 
+                    String res = resourceAddress + " " + fileName;
+                    this.send(res, nodeIP, nodePort);
                 }
 
                 if (vars[0].equals("heartbeat") && vars.length > 1) {
@@ -105,11 +112,11 @@ public class SuperNodeThread extends Thread {
                 .findFirst()
                 .orElseGet(null);
     }
-
-    private void sendGroup(String message) throws IOException {
+    
+    private void send(String message, InetAddress ip, int port) throws IOException {
         byte[] out = message.getBytes();
         DatagramSocket socket = new DatagramSocket();
-        DatagramPacket packet = new DatagramPacket(out, out.length, this.groupIP, this.groupPort);
+        DatagramPacket packet = new DatagramPacket(out, out.length, ip, port);
         socket.send(packet);
         socket.close();
     }

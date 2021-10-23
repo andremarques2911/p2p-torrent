@@ -35,12 +35,16 @@ public class SuperNodeGroupReceiver extends Thread {
                 this.socket.receive(packet);
                 String received = new String(packet.getData(), 0, packet.getLength());
                 System.out.println("Received: " + received);
+//                "192.168.10.16:5000-gasdasdhashjd"
+                String[] data = received.split("-");
+                String address = data[0];
+                String hash = data[1];
 
-                Resource resource = distributedHashTable.get(received);
+                Resource resource = distributedHashTable.get(hash);
                 if (resource != null) {
                     String sb = "finded " +
-                            resource.getIp() + " " +
-                            resource.getPort() + " " +
+                            address + " " +
+                            resource.getIp() + ":" + resource.getPort() + " " +
                             resource.getFileName() + " ";
                     byte[] dataRes = sb.getBytes();
                     DatagramPacket res = new DatagramPacket(dataRes, dataRes.length, packet.getAddress(), packet.getPort());
