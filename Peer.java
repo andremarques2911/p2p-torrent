@@ -1,13 +1,22 @@
+import java.net.InetAddress;
+
 public class Peer {
-    private String ip;
+
+    private InetAddress ip;
     private int port;
     private int timeout;
 
-    public String getIp() {
+    public Peer(InetAddress ip, int port, int timeout) {
+        this.ip = ip;
+        this.port = port;
+        this.timeout = timeout;
+    }
+
+    public InetAddress getIp() {
         return ip;
     }
 
-    public void setIp(String ip) {
+    public void setIp(InetAddress ip) {
         this.ip = ip;
     }
 
@@ -25,5 +34,13 @@ public class Peer {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    @Override
+    public String toString() {
+        return "{ip=" + ip +
+                ", port=" + port +
+                ", timeout=" + timeout +
+                '}';
     }
 }

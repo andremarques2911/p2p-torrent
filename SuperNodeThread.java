@@ -1,9 +1,7 @@
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,9 +33,8 @@ public class SuperNodeThread extends Thread {
         while (true) {
             try {
                 DatagramPacket packet = new DatagramPacket(resource, resource.length);
-                socket.setSoTimeout(500);
+                socket.setSoTimeout(50000);
                 socket.receive(packet);
-                System.out.print("Recebi!");
 
                 String content = new String(packet.getData(), 0, packet.getLength());
                 peerIP = packet.getAddress();
@@ -53,13 +50,18 @@ public class SuperNodeThread extends Thread {
                         distributedHashTable.put(vars[i], resource);
                         sb.append(vars[i]).append(" ");
                     }
-                    peerResources.put(key, sb.toString());
+                    String value = sb.toString();
+
+                    peerResources.put(key, value);
+                    timeouts.add(new Peer(peerIP, peerPort, 15));
                     response = "OK".getBytes();
                     packet = new DatagramPacket(response, response.length, peerIP, peerPort);
                     socket.send(packet);
                 }
 
                 if (vars[0].equals("find") && vars.length > 1) {
+                    System.out.println("Buscando recurso...");
+                    System.out.println("ADs: " + groupIP + ":" + groupPort);
                     for (int i = 1; i < vars.length; i++) {
                        this.send(key + "-" + vars[i], this.groupIP, this.groupPort);
                     }
@@ -76,18 +78,24 @@ public class SuperNodeThread extends Thread {
                     this.send(res, nodeIP, nodePort);
                 }
 
-                if (vars[0].equals("heartbeat") && vars.length > 1) {
-                    System.out.print("\nheartbeat: " + vars[1]);
-                    Peer peer = findPeer(peerIP, peerPort);
-                    if (peer != null)
+                if (vars[0].equals("heartbeat")) {
+                    try {
+                        Peer peer = findPeer(peerIP, peerPort);
+                        System.out.println("Heartbeated by: " + peerIP + ": " + peerPort);
+                        assert peer != null;
                         peer.setTimeout(15);
+                    } catch (NullPointerException e) {
+                        System.out.println("No peer to hearbeat yet");
+                    }
+
                 }
             } catch (IOException e) {
+                e.printStackTrace();
                 // decrementa os contadores de timeout a cada 500ms (em função do receive com timeout)
                 Peer peer = findPeer(peerIP, peerPort);
                 peer.setTimeout(peer.getTimeout() -1);
                 if (peer.getTimeout() == 0) {
-                    System.out.println("\nPeer " + peer.getIp() + ":" + peer.getPort() + " is dead.");
+                    System.out.println("Peer " + peer.getIp() + ":" + peer.getPort() + " is dead.");
                     InetAddress finalPeerIP = peerIP;
                     int finalPeerPort = peerPort;
                     String key = finalPeerIP + ":" + finalPeerPort;
@@ -99,7 +107,7 @@ public class SuperNodeThread extends Thread {
                         }
                         peerResources.remove(key);
                     }
-                    timeouts.removeIf(p -> p.getIp().equalsIgnoreCase(finalPeerIP.getHostAddress()) && p.getPort() == finalPeerPort);
+                    timeouts.removeIf(p -> p.getIp().equals(finalPeerIP) && p.getPort() == finalPeerPort);
                 }
                 System.out.print(".");
             }
@@ -107,13 +115,17 @@ public class SuperNodeThread extends Thread {
     }
 
     private Peer findPeer(InetAddress peerIP, int peerPort) {
-        return timeouts.stream()
-                .filter(p -> p.getIp().equalsIgnoreCase(peerIP.getHostAddress()) && p.getPort() == peerPort)
-                .findFirst()
-                .orElseGet(null);
+        for (Peer peer: timeouts) {
+            System.out.println(peer);
+            if (peer.getIp().equals(peerIP) && peer.getPort() + 100 == peerPort) {
+                return peer;
+            }
+        }
+        return null;
     }
-    
+
     private void send(String message, InetAddress ip, int port) throws IOException {
+        System.out.println("Message: " + message + " " + ip + ": " + port);
         byte[] out = message.getBytes();
         DatagramSocket socket = new DatagramSocket();
         DatagramPacket packet = new DatagramPacket(out, out.length, ip, port);

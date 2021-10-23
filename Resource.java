@@ -45,4 +45,13 @@ public class Resource {
     public void setPort(int port) {
         this.port = port;
     }
+
+    @Override
+    public String toString() {
+        return "{hash='" + hash + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", ip=" + ip +
+                ", port=" + port +
+                '}';
+    }
 }
