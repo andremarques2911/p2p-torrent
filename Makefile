@@ -3,7 +3,7 @@ all:				P2P.class
 P2P.class:		P2P.java
 				@javac P2P.java
 
-SuperNode.class:		SuperNodeThread.class SuperNodeGroupReceiver.class SuperNode.java
+SuperNode.class:		SuperNodeThread.class SuperNodeGroupReceiver.class Peer.class Resource.class SuperNode.java
 				@javac SuperNode.java
 
 SuperNodeThread.class:		SuperNodeThread.java
@@ -12,7 +12,13 @@ SuperNodeThread.class:		SuperNodeThread.java
 SuperNodeGroupReceiver.class:		SuperNodeGroupReceiver.java
 				@javac SuperNodeGroupReceiver.java
 
-Node.class:			NodeThread.class Heartbeat.class NodeClient.class Node.java
+Peer.class:		Peer.java
+				@javac Peer.java
+
+Resource.class:		Resource.java
+				@javac Resource.java
+
+Node.class:			NodeThread.class Heartbeat.class NodeClient.class Resource.class Node.java
 				@javac Node.java
 
 NodeThread.class:		NodeThread.java
