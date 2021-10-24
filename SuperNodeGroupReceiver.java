@@ -2,12 +2,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SuperNodeGroupReceiver extends Thread {
-    
     private MulticastSocket socket;
     private InetAddress inetAddress;
     private String groupIP;
@@ -28,14 +26,12 @@ public class SuperNodeGroupReceiver extends Thread {
             this.socket.joinGroup(inetAddress);
 
             while (true) {
-
                 byte[] in = new byte[256];
                 DatagramPacket packet = new DatagramPacket(in, in.length);
 
                 this.socket.receive(packet);
                 String received = new String(packet.getData(), 0, packet.getLength());
                 System.out.println("Received: " + received);
-//                "192.168.10.16:5000-gasdasdhashjd"
                 String[] data = received.split("-");
                 String address = data[0];
                 String hash = data[1];

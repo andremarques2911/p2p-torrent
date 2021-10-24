@@ -5,10 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 
 public class NodeClient extends Thread {
-
 	private DatagramSocket socket = null;
 	private DatagramPacket packet = null;
 	protected InetAddress supernodeIP = null;
@@ -27,9 +25,7 @@ public class NodeClient extends Thread {
 
 	public void run() {
 		BufferedReader obj = new BufferedReader(new InputStreamReader(System.in));
-
 		while (true) {
-
 			System.out.println("\n<find/peer> <resource-hash>");
 			System.out.println("Example: find 0zx431221");
 			System.out.println("Example: peer <file-name> <peer-ip> <peer-port>");
@@ -65,17 +61,6 @@ public class NodeClient extends Thread {
 			System.out.println("to supernode: " + address + ":" + port);
 			packet = new DatagramPacket(resource, resource.length, address, port);
 			socket.send(packet);
-
-//			while (true) {
-//				try {
-//					packet = new DatagramPacket(response, response.length);
-//					socket.setSoTimeout(500);
-//					socket.receive(packet);
-//
-//				} catch (IOException e) {
-//					break;
-//				}
-//			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

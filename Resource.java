@@ -1,7 +1,6 @@
 import java.net.InetAddress;
 
 public class Resource {
-
     private String hash;
     private String fileName;
     private InetAddress ip;

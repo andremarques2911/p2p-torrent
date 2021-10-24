@@ -2,10 +2,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 public class NodeThread extends Thread {
 	protected DatagramSocket socket = null;
@@ -25,7 +23,6 @@ public class NodeThread extends Thread {
 
 	public void run() {
 		try {
-			// envia um packet
 			resource = ("create " + hashes).getBytes();
 			DatagramPacket packet = new DatagramPacket(resource, resource.length, supernodeIP, supernodePort);
 			socket.send(packet);
@@ -35,12 +32,10 @@ public class NodeThread extends Thread {
 
 		while (true) {
 			try {
-				// obtem a resposta
 				packet = new DatagramPacket(response, response.length);
 				socket.setSoTimeout(500);
 				socket.receive(packet);
 
-				// mostra a resposta
 				String data = new String(packet.getData(), 0, packet.getLength());
 
 				String[] vars = data.split("\\s");
@@ -57,11 +52,7 @@ public class NodeThread extends Thread {
 					}
 				}
 			} catch (IOException e) {
-//				if (!vars[0].equals("wait")) {
-//					// fecha o socket
-//					socket.close();
-//					break;
-//				}
+				System.err.println(e.getMessage());
 			}
 		}
 	}

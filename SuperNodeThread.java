@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SuperNodeThread extends Thread {
-
     private DatagramSocket socket;
     private InetAddress groupIP;
     private int groupPort;
@@ -33,7 +32,7 @@ public class SuperNodeThread extends Thread {
         while (true) {
             try {
                 DatagramPacket packet = new DatagramPacket(resource, resource.length);
-                socket.setSoTimeout(50000);
+                socket.setSoTimeout(5000);
                 socket.receive(packet);
 
                 String content = new String(packet.getData(), 0, packet.getLength());
@@ -82,8 +81,9 @@ public class SuperNodeThread extends Thread {
                     try {
                         Peer peer = findPeer(peerIP, peerPort);
                         System.out.println("Heartbeated by: " + peerIP + ": " + peerPort);
-                        assert peer != null;
-                        peer.setTimeout(15);
+                        if (peer != null) {
+                            peer.setTimeout(15);
+                        }
                     } catch (NullPointerException e) {
                         System.out.println("No peer to hearbeat yet");
                     }
@@ -92,22 +92,23 @@ public class SuperNodeThread extends Thread {
                 System.err.println(e.getMessage());
                 // decrementa os contadores de timeout a cada 500ms (em função do receive com timeout)
                 Peer peer = findPeer(peerIP, peerPort);
-                assert peer != null;
-                peer.setTimeout(peer.getTimeout() -1);
-                if (peer.getTimeout() == 0) {
-                    System.out.println("Peer " + peer.getIp() + ":" + peer.getPort() + " is dead.");
-                    InetAddress finalPeerIP = peerIP;
-                    int finalPeerPort = peerPort;
-                    String key = finalPeerIP + ":" + finalPeerPort;
-                    String value = peerResources.get(key);
-                    if (value != null) {
-                        String[] resources = value.split("");
-                        for (String r : resources) {
-                            distributedHashTable.remove(r);
+                if (peer != null) {
+                    peer.setTimeout(peer.getTimeout() -1);
+                    if (peer.getTimeout() == 0) {
+                        System.out.println("Peer " + peer.getIp() + ":" + peer.getPort() + " is dead.");
+                        InetAddress finalPeerIP = peerIP;
+                        int finalPeerPort = peerPort;
+                        String key = finalPeerIP + ":" + finalPeerPort;
+                        String value = peerResources.get(key);
+                        if (value != null) {
+                            String[] resources = value.split("");
+                            for (String r : resources) {
+                                distributedHashTable.remove(r);
+                            }
+                            peerResources.remove(key);
                         }
-                        peerResources.remove(key);
+                        timeouts.removeIf(p -> p.getIp().equals(finalPeerIP) && p.getPort() == finalPeerPort);
                     }
-                    timeouts.removeIf(p -> p.getIp().equals(finalPeerIP) && p.getPort() == finalPeerPort);
                 }
                 System.out.print(".");
             }
