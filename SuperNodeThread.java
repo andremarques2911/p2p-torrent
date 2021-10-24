@@ -87,12 +87,12 @@ public class SuperNodeThread extends Thread {
                     } catch (NullPointerException e) {
                         System.out.println("No peer to hearbeat yet");
                     }
-
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
                 // decrementa os contadores de timeout a cada 500ms (em função do receive com timeout)
                 Peer peer = findPeer(peerIP, peerPort);
+                assert peer != null;
                 peer.setTimeout(peer.getTimeout() -1);
                 if (peer.getTimeout() == 0) {
                     System.out.println("Peer " + peer.getIp() + ":" + peer.getPort() + " is dead.");

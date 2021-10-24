@@ -66,16 +66,16 @@ public class NodeClient extends Thread {
 			packet = new DatagramPacket(resource, resource.length, address, port);
 			socket.send(packet);
 
-			while (true) {
-				try {
-					packet = new DatagramPacket(response, response.length);
-					socket.setSoTimeout(500);
-					socket.receive(packet);
-
-				} catch (IOException e) {
-					break;
-				}
-			}
+//			while (true) {
+//				try {
+//					packet = new DatagramPacket(response, response.length);
+//					socket.setSoTimeout(500);
+//					socket.receive(packet);
+//
+//				} catch (IOException e) {
+//					break;
+//				}
+//			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

@@ -42,10 +42,12 @@ public class NodeThread extends Thread {
 
 				// mostra a resposta
 				String data = new String(packet.getData(), 0, packet.getLength());
-				System.out.println("recebido: " + data.substring(0, 100));
-				String[] vars = data.split("\\s");
 
+				String[] vars = data.split("\\s");
+				String received = data.length() > 100 ? data.substring(0, 100) : data;
+				System.out.println("recebido: " + received);
 				if (vars[0].equalsIgnoreCase("find")) {
+					System.out.println("Enviado arquivo " + vars[1] + "para " + packet.getAddress() + ":" + packet.getPort());
 					try {
 						byte[] file = Files.readAllBytes(Path.of("./files/" + vars[1]));
 						DatagramPacket filePacket = new DatagramPacket(file, file.length, packet.getAddress(), packet.getPort());
