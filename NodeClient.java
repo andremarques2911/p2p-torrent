@@ -13,15 +13,12 @@ public class NodeClient extends Thread {
 	private DatagramPacket packet = null;
 	protected InetAddress supernodeIP = null;
 	protected int supernodePort;
-
 	private byte[] response = new byte[1024];
-	private int port;
 
-	public NodeClient(String[] args) throws IOException {
+	public NodeClient(String[] args, DatagramSocket socket) throws IOException {
 		supernodeIP = InetAddress.getByName(args[0]);
 		supernodePort = Integer.parseInt(args[1]);
-		port = Integer.parseInt(args[3]) + 101;
-		socket = new DatagramSocket(port);
+		this.socket = socket;
 	}
 
 	private InetAddress fixIp(InetAddress address) throws UnknownHostException {
@@ -35,7 +32,7 @@ public class NodeClient extends Thread {
 
 			System.out.println("\n<find/peer> <resource-hash>");
 			System.out.println("Example: find 0zx431221");
-			System.out.println("Example: peer ");
+			System.out.println("Example: peer <file-name> <peer-ip> <peer-port>");
 			try {
 				String str = obj.readLine();
 				String[] vars = str.split("\\s");
@@ -46,11 +43,11 @@ public class NodeClient extends Thread {
 					System.out.println("PEER IP: " + peerIP);
 					int peerPort = Integer.parseInt(vars[3]);
 					System.out.println("Sending message to peer on port " + peerIP + ":" + peerPort);
-					send(hash, peerIP, peerPort);
+					send("find " + hash, peerIP, peerPort);
 				} else {
 					supernodeIP = fixIp(supernodeIP);
 					System.out.println("Sending message to supernode on address " + supernodeIP + ":" + supernodePort);
-					StringBuilder sb = new StringBuilder();
+					StringBuilder sb = new StringBuilder("find ");
 					for (int i = 1; i < vars.length; i++) {
 						sb.append(vars[i]).append(" ");
 					}

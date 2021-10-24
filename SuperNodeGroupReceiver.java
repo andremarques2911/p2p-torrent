@@ -42,7 +42,7 @@ public class SuperNodeGroupReceiver extends Thread {
 
                 Resource resource = distributedHashTable.get(hash);
                 if (resource != null) {
-                    String sb = "finded " +
+                    String sb = "found " +
                             address + " " +
                             resource.getIp() + ":" + resource.getPort() + " " +
                             resource.getFileName() + " ";

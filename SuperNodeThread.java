@@ -67,9 +67,9 @@ public class SuperNodeThread extends Thread {
                     }
                 }
 
-                if (vars[0].equals("finded") && vars.length > 1) {
+                if (vars[0].equals("found") && vars.length > 1) {
                     String[] address = vars[1].split(":");
-                    InetAddress nodeIP = InetAddress.getByName(address[0]);
+                    InetAddress nodeIP = InetAddress.getByName(address[0].replace("/", ""));
                     int nodePort = Integer.parseInt(address[1]);
                     String resourceAddress = vars[2];
                     String fileName = vars[3];
@@ -117,7 +117,7 @@ public class SuperNodeThread extends Thread {
     private Peer findPeer(InetAddress peerIP, int peerPort) {
         for (Peer peer: timeouts) {
             System.out.println(peer);
-            if (peer.getIp().equals(peerIP) && peer.getPort() + 100 == peerPort) {
+            if (peer.getIp().equals(peerIP) && peer.getPort() == peerPort) {
                 return peer;
             }
         }
@@ -127,9 +127,7 @@ public class SuperNodeThread extends Thread {
     private void send(String message, InetAddress ip, int port) throws IOException {
         System.out.println("Message: " + message + " " + ip + ": " + port);
         byte[] out = message.getBytes();
-        DatagramSocket socket = new DatagramSocket();
         DatagramPacket packet = new DatagramPacket(out, out.length, ip, port);
         socket.send(packet);
-        socket.close();
     }
 }
