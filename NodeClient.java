@@ -58,7 +58,6 @@ public class NodeClient extends Thread {
 	private void send(String data, InetAddress address, int port) {
 		try {
 			byte[] resource = data.getBytes();
-			System.out.println("to supernode: " + address + ":" + port);
 			packet = new DatagramPacket(resource, resource.length, address, port);
 			socket.send(packet);
 		} catch (IOException e) {

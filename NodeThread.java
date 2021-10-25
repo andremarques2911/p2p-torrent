@@ -33,16 +33,15 @@ public class NodeThread extends Thread {
 		while (true) {
 			try {
 				packet = new DatagramPacket(response, response.length);
-				socket.setSoTimeout(500);
 				socket.receive(packet);
 
 				String data = new String(packet.getData(), 0, packet.getLength());
 
 				String[] vars = data.split("\\s");
 				String received = data.length() > 100 ? data.substring(0, 100) : data;
-				System.out.println("recebido: " + received);
+				System.out.println("Resource at: " + received);
 				if (vars[0].equalsIgnoreCase("find")) {
-					System.out.println("Enviado arquivo " + vars[1] + "para " + packet.getAddress() + ":" + packet.getPort());
+					System.out.println("Sending file " + vars[1] + "to " + packet.getAddress() + ":" + packet.getPort());
 					try {
 						byte[] file = Files.readAllBytes(Path.of("./files/" + vars[1]));
 						DatagramPacket filePacket = new DatagramPacket(file, file.length, packet.getAddress(), packet.getPort());

@@ -32,7 +32,7 @@ public class SuperNodeThread extends Thread {
         while (true) {
             try {
                 DatagramPacket packet = new DatagramPacket(resource, resource.length);
-                socket.setSoTimeout(5000);
+                socket.setSoTimeout(50000);
                 socket.receive(packet);
 
                 String content = new String(packet.getData(), 0, packet.getLength());
@@ -60,7 +60,6 @@ public class SuperNodeThread extends Thread {
 
                 if (vars[0].equals("find") && vars.length > 1) {
                     System.out.println("Buscando recurso...");
-                    System.out.println("ADs: " + groupIP + ":" + groupPort);
                     for (int i = 1; i < vars.length; i++) {
                        this.send(key + "-" + vars[i], this.groupIP, this.groupPort);
                     }
@@ -89,6 +88,7 @@ public class SuperNodeThread extends Thread {
                     }
                 }
             } catch (IOException e) {
+                System.out.println("ueeee");
                 System.err.println(e.getMessage());
                 // decrementa os contadores de timeout a cada 500ms (em função do receive com timeout)
                 Peer peer = findPeer(peerIP, peerPort);
@@ -110,14 +110,12 @@ public class SuperNodeThread extends Thread {
                         timeouts.removeIf(p -> p.getIp().equals(finalPeerIP) && p.getPort() == finalPeerPort);
                     }
                 }
-                System.out.print(".");
             }
         }
     }
 
     private Peer findPeer(InetAddress peerIP, int peerPort) {
         for (Peer peer: timeouts) {
-            System.out.println(peer);
             if (peer.getIp().equals(peerIP) && peer.getPort() == peerPort) {
                 return peer;
             }
