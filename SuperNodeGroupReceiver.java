@@ -8,8 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SuperNodeGroupReceiver extends Thread {
     private MulticastSocket socket;
     private InetAddress inetAddress;
-    private String groupIP;
-    private int groupPort;
+    private final String groupIP;
+    private final int groupPort;
     ConcurrentHashMap<String, Resource> distributedHashTable;
 
     public SuperNodeGroupReceiver(String[] args, ConcurrentHashMap<String, Resource> distributedHashTable) {

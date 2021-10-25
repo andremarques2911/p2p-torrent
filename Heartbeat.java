@@ -4,15 +4,14 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class Heartbeat extends Thread {
-	private DatagramSocket socket;
-	private DatagramPacket packet = null;
-	private InetAddress addr;
-	private int superNodePort;
-	private byte[] data;
+	private final DatagramSocket socket;
+	private final InetAddress address;
+	private final int superNodePort;
+	private final byte[] data;
 
 	public Heartbeat(String[] args, DatagramSocket socket) throws IOException {
 		data = ("heartbeat").getBytes();
-		addr = InetAddress.getByName(args[0]);
+		address = InetAddress.getByName(args[0]);
 		superNodePort = Integer.parseInt(args[1]);
 		this.socket = socket;
 	}
@@ -20,7 +19,7 @@ public class Heartbeat extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				packet = new DatagramPacket(data, data.length, addr, superNodePort);
+				DatagramPacket packet = new DatagramPacket(data, data.length, address, superNodePort);
 				socket.send(packet);
 			} catch (IOException e) {
 				socket.close();

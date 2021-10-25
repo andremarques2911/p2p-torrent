@@ -7,20 +7,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SuperNodeThread extends Thread {
-    private DatagramSocket socket;
-    private InetAddress groupIP;
-    private int groupPort;
-    private int port;
-    private byte[] resource = new byte[1024];
-    private byte[] response = new byte[1024];
-    private ConcurrentHashMap<String, Resource> distributedHashTable;
-    private Hashtable<String, String> peerResources;
+    private final DatagramSocket socket;
+    private final InetAddress groupIP;
+    private final int groupPort;
+    private final byte[] resource = new byte[1024];
+    private final ConcurrentHashMap<String, Resource> distributedHashTable;
+    private final Hashtable<String, String> peerResources;
     private List<Peer> timeouts;
 
     public SuperNodeThread(String[] args, ConcurrentHashMap<String, Resource> distributedHashTable) throws IOException {
         this.groupIP = InetAddress.getByName(args[0]);
         this.groupPort = Integer.parseInt(args[1]);
-        this.port = Integer.parseInt(args[2]);
+        int port = Integer.parseInt(args[2]);
         this.socket = new DatagramSocket(port);
         this.distributedHashTable = distributedHashTable;
         this.peerResources = new Hashtable<>();
@@ -52,8 +50,8 @@ public class SuperNodeThread extends Thread {
                     }
                     String value = sb.toString();
                     peerResources.put(key, value);
-                    timeouts.add(new Peer(peerIP, peerPort, 15));
-                    response = "OK".getBytes();
+                    timeouts.add(new Peer(peerIP, peerPort, 20));
+                    byte[] response = "OK".getBytes();
                     packet = new DatagramPacket(response, response.length, peerIP, peerPort);
                     socket.send(packet);
                 }
@@ -71,7 +69,7 @@ public class SuperNodeThread extends Thread {
                     InetAddress nodeIP = InetAddress.getByName(address[0].replace("/", ""));
                     int nodePort = Integer.parseInt(address[1]);
                     String[] resourceAddress = vars[2].split(":");
-                    String resourceIP = resourceAddress[0];
+                    String resourceIP = resourceAddress[0].replace("/", "");
                     String resourcePort = resourceAddress[1];
                     String fileName = vars[3];
                     String res = "peer " + fileName + " " + resourceIP + " " + resourcePort;
@@ -82,7 +80,7 @@ public class SuperNodeThread extends Thread {
                     Peer peer = findPeer(peerIP, peerPort);
                     System.out.println("Heartbeated by: " + peerIP + ": " + peerPort);
                     if (peer != null) {
-                        peer.setTimeout(15);
+                        peer.setTimeout(20);
                     }
                 }
             } catch (IOException e) {
@@ -98,9 +96,7 @@ public class SuperNodeThread extends Thread {
 
     private void killPeer(InetAddress peerIP, int peerPort, Peer peer) {
         System.out.println("Peer " + peer.getIp() + ":" + peer.getPort() + " is dead.");
-        InetAddress finalPeerIP = peerIP;
-        int finalPeerPort = peerPort;
-        String key = finalPeerIP + ":" + finalPeerPort;
+        String key = peerIP + ":" + peerPort;
         String value = peerResources.get(key);
         if (value != null) {
             String[] resources = value.split("");
@@ -109,7 +105,7 @@ public class SuperNodeThread extends Thread {
             }
             peerResources.remove(key);
         }
-        timeouts.removeIf(p -> p.getIp().equals(finalPeerIP) && p.getPort() == finalPeerPort);
+        timeouts.removeIf(p -> p.getIp().equals(peerIP) && p.getPort() == peerPort);
     }
 
     private Peer findPeer(InetAddress peerIP, int peerPort) {

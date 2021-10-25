@@ -6,13 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class NodeThread extends Thread {
-	protected DatagramSocket socket = null;
-	protected DatagramPacket packet = null;
-	protected InetAddress supernodeIP = null;
-	protected int supernodePort;
-	protected byte[] resource = new byte[1024];
-	protected byte[] response = new byte[1024];
-	protected String hashes;
+	private final DatagramSocket socket;
+	private final InetAddress supernodeIP;
+	private final int supernodePort;
+	private final byte[] response = new byte[1024];
+	private final String hashes;
 
 	public NodeThread(String[] args, DatagramSocket socket) throws IOException {
 		supernodeIP = InetAddress.getByName(args[0]);
@@ -23,7 +21,7 @@ public class NodeThread extends Thread {
 
 	public void run() {
 		try {
-			resource = ("create " + hashes).getBytes();
+			byte[] resource = ("create " + hashes).getBytes();
 			DatagramPacket packet = new DatagramPacket(resource, resource.length, supernodeIP, supernodePort);
 			socket.send(packet);
 		} catch (IOException e) {
@@ -32,7 +30,7 @@ public class NodeThread extends Thread {
 
 		while (true) {
 			try {
-				packet = new DatagramPacket(response, response.length);
+				DatagramPacket packet = new DatagramPacket(response, response.length);
 				socket.receive(packet);
 
 				String data = new String(packet.getData(), 0, packet.getLength());

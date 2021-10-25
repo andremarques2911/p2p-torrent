@@ -7,11 +7,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class NodeClient extends Thread {
-	private DatagramSocket socket = null;
-	private DatagramPacket packet = null;
-	protected InetAddress supernodeIP = null;
+	private final DatagramSocket socket;
+	protected InetAddress supernodeIP;
 	protected int supernodePort;
-	private byte[] response = new byte[1024];
 
 	public NodeClient(String[] args, DatagramSocket socket) throws IOException {
 		supernodeIP = InetAddress.getByName(args[0]);
@@ -57,7 +55,7 @@ public class NodeClient extends Thread {
 	private void send(String data, InetAddress address, int port) {
 		try {
 			byte[] resource = data.getBytes();
-			packet = new DatagramPacket(resource, resource.length, address, port);
+			DatagramPacket packet = new DatagramPacket(resource, resource.length, address, port);
 			socket.send(packet);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
