@@ -1,5 +1,4 @@
 public class P2P {
-
     public static void main(String[] args) {
         //SuperNode: java P2P <GroupIP> <GroupPort> <Port>
         //ClientNode: java P2P localhost <SuperNodePort> <Resources> <Port>
@@ -13,5 +12,4 @@ public class P2P {
             new Node(args);
         }
     }
-
 }

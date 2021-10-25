@@ -29,7 +29,6 @@ public class Heartbeat extends Thread {
 				Thread.sleep(5000);
 			} catch(InterruptedException e) {
 			}
-//			System.out.println("\npulse!");
 		}
 	}
 }

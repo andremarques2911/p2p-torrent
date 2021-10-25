@@ -13,7 +13,7 @@ public class Node {
 			new Heartbeat(args, socket).start();
 			new NodeClient(args, socket).start();
 		} catch (IOException e) {
-
+			System.err.println(e.getMessage());
 		}
 	}
 }

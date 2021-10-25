@@ -27,7 +27,7 @@ public class NodeClient extends Thread {
 		BufferedReader obj = new BufferedReader(new InputStreamReader(System.in));
 		while (true) {
 			System.out.println("\n<find/peer> <resource-hash>");
-			System.out.println("Example: find 0zx431221");
+			System.out.println("Example: find <hash>");
 			System.out.println("Example: peer <file-name> <peer-ip> <peer-port>");
 			try {
 				String str = obj.readLine();
@@ -36,7 +36,6 @@ public class NodeClient extends Thread {
 				if (vars[0].equalsIgnoreCase("peer")) {
 					String hash = vars[1];
 					InetAddress peerIP = InetAddress.getByName(vars[2]);
-					System.out.println("PEER IP: " + peerIP);
 					int peerPort = Integer.parseInt(vars[3]);
 					System.out.println("Sending message to peer on port " + peerIP + ":" + peerPort);
 					send("find " + hash, peerIP, peerPort);

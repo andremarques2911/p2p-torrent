@@ -1,7 +1,6 @@
 import java.net.InetAddress;
 
 public class Peer {
-
     private InetAddress ip;
     private int port;
     private int timeout;
