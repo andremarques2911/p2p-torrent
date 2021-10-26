@@ -99,7 +99,7 @@ public class SuperNodeThread extends Thread {
         String key = peerIP + ":" + peerPort;
         String value = peerResources.get(key);
         if (value != null) {
-            String[] resources = value.split("");
+            String[] resources = value.split(" ");
             for (String r : resources) {
                 distributedHashTable.remove(r);
             }
